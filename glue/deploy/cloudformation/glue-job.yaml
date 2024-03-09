@@ -84,7 +84,6 @@ Resources:
 
   etljob:
     Type: "AWS::Glue::Job"
-    DependsOn: unzipFiles
     Properties:
       Role: !Ref gluejobrole
       AllocatedCapacity: 10
