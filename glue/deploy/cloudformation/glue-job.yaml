@@ -98,7 +98,7 @@ Resources:
       Command:
         Name: glueetl
         PythonVersion: "3"
-        ScriptLocation: !Join [ "/", [ "s3:/",!Ref 'SourceCodeBucket' , gluescripts/datalakejob.py ] ]
+        ScriptLocation: !Join [ "/", [ "s3:/",!Ref 'SourceCodeBucket' , glue/code/datalakejob.py ] ]
       Tags:
         - Key: env
           Value: !Ref EnvType

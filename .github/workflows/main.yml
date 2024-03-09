@@ -41,6 +41,7 @@ jobs:
       run: |
          pwd
          ls -ltr
+         aws s3 cp --recursive ${{ github.workspace }}/glue/code/ s3://${{ github.event.inputs.SourceCodeBucket }}/glue/code/
          ls ${{ github.workspace }}/glue/deploy/parameters/${{ github.event.inputs.env}}-parameters.json
          tree .
 
