@@ -2,9 +2,22 @@ AWSTemplateFormatVersion: '2010-09-09'
 Parameters:
   SourceCodeBucket:
     Type: String
+  DataBucket:
+    Type: String
+  GlueDatabaseName:
+    Type: String
+    Default: covid19
+  EnvType:
+    Description: Environment type.
+    Default: test
+    Type: String
+    AllowedValues:
+      - prod
+      - test
+    ConstraintDescription: must specify prod or test.
 Resources:
   Topic:
     Type: AWS::SNS::Topic
     Properties:
-      DisplayName: !Ref Name
-      TopicName: !Ref Name
+      DisplayName: !Ref SourceCodeBucket
+      TopicName: !Ref SourceCodeBucket
