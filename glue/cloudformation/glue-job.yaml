@@ -1,0 +1,141 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Parameters:
+  SourceCodeBucket:
+    Type: String
+  DataBucket:
+    Type: String
+  GlueDatabaseName:
+    Type: String
+    Default: covid19
+  EnvType:
+    Description: Environment type.
+    Default: test
+    Type: String
+    AllowedValues:
+      - prod
+      - test
+    ConstraintDescription: must specify prod or test.
+Resources:
+  rawcrawler:
+    Type: "AWS::Glue::Crawler"
+    Properties:
+      Role: !GetAtt crawlerrole.Arn
+      DatabaseName: !Ref GlueDatabaseName
+      Targets:
+        S3Targets:
+          - Path: !Join [ "/", [ "s3:/" , !Ref 'DataBucket', input/lab9/us-states/ ] ]
+      Tags:
+        - Key: env
+          Value: !Ref EnvType
+        - Key: Name
+          Value: !Join [ "-", [ "raw-crawler", !Ref EnvType ] ]
+
+  datalakecrawler:
+    Type: "AWS::Glue::Crawler"
+    Properties:
+      Role: !GetAtt crawlerrole.Arn
+      DatabaseName: !Ref GlueDatabaseName
+      Targets:
+        S3Targets:
+          - Path: !Join [ "/", [ "s3:/",!Ref 'SourceCodeBucket' , datalake/us_states/ ] ]
+      Tags:
+        - Key: env
+          Value: !Ref EnvType
+        - Key: Name
+          Value: !Join [ "-", [ "datalake-crawler", !Ref EnvType ] ]
+
+  crawlerrole:
+    Type: "AWS::IAM::Role"
+    Properties:
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSGlueServiceRole
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - glue.amazonaws.com
+            Action:
+              - sts:AssumeRole
+      Path: /
+      Policies:
+        - PolicyName: s3allsinglebucket
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Action:
+                  - s3:GetObject
+                Resource:
+                  - !Join [ "", [ "arn:aws:s3:::", !Ref SourceCodeBucket , "/*" ] ]
+                  - !Join [ "", [ "arn:aws:s3:::", !Ref DataBucket , "/*" ] ]
+                Effect: Allow
+              - Action:
+                  - s3:ListBucket
+                Resource:
+                  - !Join [ "", [ "arn:aws:s3:::",!Ref SourceCodeBucket ] ]
+                  - !Join [ "", [ "arn:aws:s3:::", !Ref DataBucket ] ]
+                Effect: Allow
+      Tags:
+         - Key: env
+           Value: !Ref EnvType
+         - Key: Name
+           Value: !Join [ "-", [ "crawler-role", !Ref EnvType ] ]
+
+  etljob:
+    Type: "AWS::Glue::Job"
+    DependsOn: unzipFiles
+    Properties:
+      Role: !Ref gluejobrole
+      AllocatedCapacity: 10
+      GlueVersion: "4.0"
+      DefaultArguments:
+        "--TempDir": !Join [ "/", [ "s3:/",!Ref 'SourceCodeBucket' , tmp/ ] ]
+        "--sourcedatabase": !Ref GlueDatabaseName
+        "--destinationpath": !Join [ "/", [ "s3:/",!Ref 'SourceCodeBucket' , datalake/ ] ]
+        "--region": !Ref AWS::Region
+        "--job-bookmark-option": job-bookmark-enable
+      Command:
+        Name: glueetl
+        PythonVersion: "3"
+        ScriptLocation: !Join [ "/", [ "s3:/",!Ref 'SourceCodeBucket' , gluescripts/datalakejob.py ] ]
+      Tags:
+        - Key: env
+          Value: !Ref EnvType
+        - Key: Name
+          Value: !Join [ "-", [ "etl-job", !Ref EnvType ] ]
+
+  gluejobrole:
+    Type: "AWS::IAM::Role"
+    Properties:
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSGlueServiceRole
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - glue.amazonaws.com
+                - lambda.amazonaws.com
+            Action:
+              - sts:AssumeRole
+      Path: /
+      Policies:
+        - PolicyName: s3allsinglebucket
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Action:
+                  - s3:*
+                Resource:
+                  - !Join [ "", [ "arn:aws:s3:::", !Ref SourceCodeBucket , "/*" ] ]
+                  - !Join [ "", [ "arn:aws:s3:::",!Ref SourceCodeBucket ] ]
+                  - !Join [ "", [ "arn:aws:s3:::", !Ref DataBucket , "/*" ] ]
+                  - !Join [ "", [ "arn:aws:s3:::",!Ref DataBucket ] ]
+                Effect: Allow
+      Tags:
+         - Key: env
+           Value: !Ref EnvType
+         - Key: Name
+           Value: !Join [ "-", [ "glue-job-role", !Ref EnvType ] ]
