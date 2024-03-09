@@ -33,4 +33,4 @@ jobs:
       with:
         name: my-glue-job-${{ github.event.inputs.env }}
         template: glue/deploy/cloudformation/simple-sns.yaml
-        parameter-overrides: "file:///${{ github.workspace }}/deploy/cloudformation/parameters/{{ env-name }}-parameters.json"
+        parameter-overrides: "file:///${{ github.workspace }}/deploy/cloudformation/parameters/${{ env }}-parameters.json"
