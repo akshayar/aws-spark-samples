@@ -36,8 +36,8 @@ jobs:
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         aws-region: ${{ github.event.inputs.region}}
 
-    - name: Configure environment name
-      id: Copy github code
+    - name: Copy Github code to S3 bucket
+      id: copy-code-to-s3-bucket
       run: |
          pwd
          ls -ltr
@@ -46,7 +46,7 @@ jobs:
          tree .
 
     - name: Deploy to AWS CloudFormation
-      id: Deploy Cloudformation
+      id: deploy-to-cloudformation
       run: |
         ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
         echo $ACCOUNT_ID
