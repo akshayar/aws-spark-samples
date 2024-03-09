@@ -1,6 +1,6 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Parameters:
-  Name:
+  SourceCodeBucket:
     Type: String
 Resources:
   Topic:

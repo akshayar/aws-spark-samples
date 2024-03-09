@@ -41,4 +41,5 @@ jobs:
       with:
         name: my-glue-job-${{ github.event.inputs.env }}
         template: glue/deploy/cloudformation/simple-sns.yaml
-        parameter-overrides: "file:///${{ github.workspace }}/glue/deploy/parameters/${{ github.event.inputs.env}}-parameters.json"
+        parameter-overrides: "SourceCodeBucket=${{ github.event.inputs.SourceCodeBucket }},DataBucket=${{ github.event.inputs.DataBucket }},GlueDatabaseName=${{ github.event.inputs.GlueDatabaseName }},EnvType=${{ github.event.inputs.env }}"
+        #parameter-overrides: "file:///${{ github.workspace }}/glue/deploy/parameters/${{ github.event.inputs.env}}-parameters.json"

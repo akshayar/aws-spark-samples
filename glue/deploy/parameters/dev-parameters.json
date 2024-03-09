@@ -1,6 +1,18 @@
 [
   {
-    "ParameterKey": "Name",
+    "ParameterKey": "SourceCodeBucket",
     "ParameterValue": "testing"
+  },
+  {
+    "ParameterKey": "DataBucket",
+    "ParameterValue": "testing"
+  },
+  {
+    "ParameterKey": "GlueDatabaseName",
+    "ParameterValue": "testing"
+  },
+  {
+    "ParameterKey": "EnvType",
+    "ParameterValue": "test"
   }
 ]
