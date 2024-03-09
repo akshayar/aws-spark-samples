@@ -25,10 +25,8 @@ Resources:
         S3Targets:
           - Path: !Join [ "/", [ "s3:/" , !Ref 'DataBucket', input/lab9/us-states/ ] ]
       Tags:
-        - Key: env
-          Value: !Ref EnvType
-        - Key: Name
-          Value: !Join [ "-", [ "raw-crawler", !Ref EnvType ] ]
+        env: !Ref EnvType
+        Name: !Join [ "-", [ "raw-crawler", !Ref EnvType ] ]
 
   datalakecrawler:
     Type: "AWS::Glue::Crawler"
@@ -39,10 +37,8 @@ Resources:
         S3Targets:
           - Path: !Join [ "/", [ "s3:/",!Ref 'SourceCodeBucket' , datalake/us_states/ ] ]
       Tags:
-        - Key: env
-          Value: !Ref EnvType
-        - Key: Name
-          Value: !Join [ "-", [ "datalake-crawler", !Ref EnvType ] ]
+        env: !Ref EnvType
+        Name: !Join [ "-", [ "datalake-crawler", !Ref EnvType ] ]
 
   crawlerrole:
     Type: "AWS::IAM::Role"
@@ -99,10 +95,8 @@ Resources:
         PythonVersion: "3"
         ScriptLocation: !Join [ "/", [ "s3:/",!Ref 'SourceCodeBucket' , glue/code/datalakejob.py ] ]
       Tags:
-        - Key: env
-          Value: !Ref EnvType
-        - Key: Name
-          Value: !Join [ "-", [ "etl-job", !Ref EnvType ] ]
+        env: !Ref EnvType
+        Name: !Join [ "-", [ "etl-job", !Ref EnvType ] ]
 
   gluejobrole:
     Type: "AWS::IAM::Role"
