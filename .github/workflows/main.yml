@@ -33,7 +33,7 @@ jobs:
       run: |
          pwd
          ls -ltr
-         ls ${{ github.workspace }}/glue/deploy/parameters/${{ github.event.inputs.region}}-parameters.json
+         ls ${{ github.workspace }}/glue/deploy/parameters/${{ github.event.inputs.env}}-parameters.json
          tree .
 
     - name: Deploy to AWS CloudFormation
@@ -41,4 +41,4 @@ jobs:
       with:
         name: my-glue-job-${{ github.event.inputs.env }}
         template: glue/deploy/cloudformation/simple-sns.yaml
-        parameter-overrides: "file:///${{ github.workspace }}/glue/deploy/parameters/dev-parameters.json"
+        parameter-overrides: "file:///${{ github.workspace }}/glue/deploy/parameters/${{ github.event.inputs.env}}-parameters.json"
