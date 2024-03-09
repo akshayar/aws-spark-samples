@@ -37,7 +37,7 @@ jobs:
         aws-region: ${{ github.event.inputs.region}}
 
     - name: Configure environment name
-      id: env-name
+      id: Copy github code
       run: |
          pwd
          ls -ltr
@@ -46,9 +46,20 @@ jobs:
          tree .
 
     - name: Deploy to AWS CloudFormation
-      uses: aws-actions/aws-cloudformation-github-deploy@master
-      with:
-        name: my-glue-job-${{ github.event.inputs.env }}
-        template: glue/deploy/cloudformation/simple-sns.yaml
-        parameter-overrides: "SourceCodeBucket=${{ github.event.inputs.SourceCodeBucket }},DataBucket=${{ github.event.inputs.DataBucket }},GlueDatabaseName=${{ github.event.inputs.GlueDatabaseName }},EnvType=${{ github.event.inputs.env }}"
-        #parameter-overrides: "file:///${{ github.workspace }}/glue/deploy/parameters/${{ github.event.inputs.env}}-parameters.json"
+      id: Deploy Cloudformation
+      run: |
+        ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
+        echo $ACCOUNT_ID
+        aws cloudformation deploy \
+        --stack-name my-glue-job-${{ github.event.inputs.env }}
+        --template-file glue/deploy/cloudformation/simple-sns.yaml \
+        --region ${{ github.event.inputs.region}}
+        --capabilities CAPABILITY_NAMED_IAM
+        --no-fail-on-empty-changeset
+        --role-arn arn:aws:iam::${ACCOUNT_ID}:role/glue-role
+        --tags EnvType=${{ github.event.inputs.env }}
+        --parameter-overrides \
+        SourceCodeBucket=${{ github.event.inputs.SourceCodeBucket }} \
+        DataBucket=${{ github.event.inputs.DataBucket }} \
+        GlueDatabaseName=${{ github.event.inputs.GlueDatabaseName }} \
+        EnvType=${{ github.event.inputs.env }} \
