@@ -33,6 +33,7 @@ jobs:
       run: |
          pwd
          ls -ltr
+         ls ${{ github.workspace }}/glue/deploy/parameters/${{ github.event.inputs.region}}-parameters.json
          tree .
 
     - name: Deploy to AWS CloudFormation
