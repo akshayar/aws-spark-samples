@@ -7,13 +7,15 @@ on:
         description: 'AWS Region'
         required: true
         default: 'ap-south-1'
+      env:
+        description: 'Environment'
+        required: true
+        default: 'dev'
 
 jobs:
-  cluster:
+  glue:
     name: Deploy stack to AWS
     runs-on: ubuntu-latest
-    outputs:
-      env-name: ${{ steps.env-name.outputs.environment }}
     steps:
     - name: Checkout
       uses: actions/checkout@v2
@@ -27,8 +29,8 @@ jobs:
         aws-region: ${{ github.event.inputs.region}}
 
     - name: Deploy to AWS CloudFormation
-      uses: aws-actions/aws-cloudformation-github-deploy@v1
+      uses: aws-actions/aws-cloudformation-github-deploy@master
       with:
-        name: my-glue-job
-        template: glue/cloudformation/glue-job.yaml
-        parameter-overrides: "file:///${{ github.workspace }}/parameters.json"
+        name: my-glue-job-${{ github.event.inputs.env }}
+        template: glue/deploy/cloudformation/simple-sns.yaml
+        parameter-overrides: "file:///${{ github.workspace }}/deploy/cloudformation/parameters/{{ env-name }}-parameters.json"
