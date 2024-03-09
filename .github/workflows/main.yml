@@ -10,7 +10,15 @@ on:
       env:
         description: 'Environment'
         required: true
-        default: 'dev'
+      SourceCodeBucket:
+        description: 'Source Code Bucket'
+        required: true
+      DataBucket:
+        description: 'Data Bucket'
+        required: true
+      GlueDatabaseName:
+        description: 'Glue Database Name'
+        required: true
 
 jobs:
   glue:
