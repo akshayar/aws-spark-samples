@@ -52,7 +52,7 @@ jobs:
         echo $ACCOUNT_ID
         aws cloudformation deploy \
         --stack-name my-glue-job-${{ github.event.inputs.env }} \
-        --template-file glue/deploy/cloudformation/simple-sns.yaml \
+        --template-file glue/deploy/cloudformation/glue-job.yaml \
         --region ${{ github.event.inputs.region}} \
         --capabilities CAPABILITY_NAMED_IAM \
         --no-fail-on-empty-changeset \
@@ -62,4 +62,4 @@ jobs:
         SourceCodeBucket=${{ github.event.inputs.SourceCodeBucket }} \
         DataBucket=${{ github.event.inputs.DataBucket }} \
         GlueDatabaseName=${{ github.event.inputs.GlueDatabaseName }} \
-        EnvType=${{ github.event.inputs.env }} 
+        EnvType=${{ github.event.inputs.env }}
