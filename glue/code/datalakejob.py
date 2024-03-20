@@ -21,6 +21,7 @@ destinationpath = args['destinationpath']
 region = args['region']
 
 glue = boto3.client('glue',region_name=region)
+### Adding comment to check the commit
 
 response = glue.get_tables(DatabaseName=sourcedatabase)
 if 'TableList' in response:
