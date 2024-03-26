@@ -6,7 +6,8 @@ from pyspark.context import SparkContext
 from awsglue.context import GlueContext
 from awsglue.job import Job
 from awsglue.context import DynamicFrame
-import time
+
+### Comment to show CI/CD
 
 
 args = getResolvedOptions(sys.argv, ['TempDir','JOB_NAME','sourcedatabase', 'destinationpath','region'])
